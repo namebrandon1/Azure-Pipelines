@@ -1,0 +1,17 @@
+{
+	"name": "Assignment_04_Exercise_01_Destination",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AZURE_SQL_LS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Sales",
+			"table": "SPerson"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
