@@ -1,0 +1,16 @@
+{
+	"name": "Assignment_04_Exercise_05_DF_Sink_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AZURE_SQL_LS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Sales",
+			"table": "SUMSalesPerson"
+		}
+	}
+}
