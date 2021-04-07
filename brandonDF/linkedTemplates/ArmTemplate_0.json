@@ -431,42 +431,55 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ON_Premise_SQL_LS')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/Assignment_04_Exercise_04_Blob_Sink')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"parameters": {
-					"servername": {
-						"type": "String",
-						"defaultValue": "LAPTOP-EAKIJQ76\\BRANDON"
-					},
-					"username": {
-						"type": "String",
-						"defaultValue": "LAPTOP-EAKIJQ76\\brand"
-					},
-					"password": {
-						"type": "String",
-						"defaultValue": "shanu1311"
-					},
-					"databasename": {
-						"type": "String",
-						"defaultValue": "AdventureWorks2012"
-					}
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_LS",
+					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "SqlServer",
+				"type": "DelimitedText",
 				"typeProperties": {
-					"connectionString": "[parameters('ON_Premise_SQL_LS_connectionString')]",
-					"userName": "[parameters('ON_Premise_SQL_LS_properties_typeProperties_userName')]",
-					"password": "@{linkedService().password}"
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@{item().Table_Name}",
+							"type": "Expression"
+						},
+						"container": "onpremistetoblobconditionoptput"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
 				},
-				"connectVia": {
-					"referenceName": "On-Premise-Integration-Runtime",
-					"type": "IntegrationRuntimeReference"
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_LS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Assignment_04_Exercise_05_Input_Destination_DS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AZURE_SQL_LS",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "Sales",
+					"table": "SalesOrderHeader"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/integrationRuntimes/On-Premise-Integration-Runtime')]"
+				"[concat(variables('factoryId'), '/linkedServices/AZURE_SQL_LS')]"
 			]
 		},
 		{
@@ -511,52 +524,122 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Assignment_04_Exercise_05_Customer_source_DS')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/ON_Premise_SQL_LS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AZURE_SQL_LS",
-					"type": "LinkedServiceReference"
+				"parameters": {
+					"servername": {
+						"type": "String",
+						"defaultValue": "LAPTOP-EAKIJQ76\\BRANDON"
+					},
+					"username": {
+						"type": "String",
+						"defaultValue": "LAPTOP-EAKIJQ76\\brand"
+					},
+					"password": {
+						"type": "String",
+						"defaultValue": "shanu1311"
+					},
+					"databasename": {
+						"type": "String",
+						"defaultValue": "AdventureWorks2012"
+					}
 				},
 				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
+				"type": "SqlServer",
 				"typeProperties": {
-					"schema": "SalesLT",
-					"table": "Customer"
+					"connectionString": "[parameters('ON_Premise_SQL_LS_connectionString')]",
+					"userName": "[parameters('ON_Premise_SQL_LS_properties_typeProperties_userName')]",
+					"password": "@{linkedService().password}"
+				},
+				"connectVia": {
+					"referenceName": "On-Premise-Integration-Runtime",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AZURE_SQL_LS')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/On-Premise-Integration-Runtime')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Assignment_04_Exercise_04_Blob_Sink')]",
+			"name": "[concat(parameters('factoryName'), '/Exercise_06')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "Select C.FirstName+' '+C.LastName+' brought '+P.Name+' from '+C.SalesPerson+' worth '+CONVERT(VARCHAR(12), P.ListPrice) \nfrom [SalesLT].[Customer] as C\nInner Join [SalesLT].[SalesOrderHeader] as S on C.CustomerID=S.CustomerID\nInner Join [SalesLT].[SalesOrderDetail] as D on S.SalesOrderID=D.SalesOrderID\nInner Join [SalesLT].[Product] as P on D.ProductID=P.ProductID",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "Assignment_04_Exercise_06_AZSQL_Source_DS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "Assignment_04_Exercise_06_Json_destination_DS",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"folder": {
+					"name": "Assignment_04"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/Assignment_04_Exercise_06_AZSQL_Source_DS')]",
+				"[concat(variables('factoryId'), '/datasets/Assignment_04_Exercise_06_Json_destination_DS')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Assignment_04_Exercise_04_Lookup_DS')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "AzureBlobStorage_LS",
+					"referenceName": "ON_Premise_SQL_LS",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": "@{item().Table_Name}",
-						"container": "onpremistetoblobconditionoptput"
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_LS')]"
+				"[concat(variables('factoryId'), '/linkedServices/ON_Premise_SQL_LS')]"
 			]
 		},
 		{
@@ -638,145 +721,159 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/dataflow1')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "Assignment_04_Exercise_03_DS",
-								"type": "DatasetReference"
-							},
-							"name": "source1"
-						},
-						{
-							"dataset": {
-								"referenceName": "Assignment_04_Exercise_03_Customer_sourcer_DS",
-								"type": "DatasetReference"
-							},
-							"name": "source2"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "Assignment_04_Exercise_03_Low_Destination",
-								"type": "DatasetReference"
-							},
-							"name": "sink1"
-						},
-						{
-							"dataset": {
-								"referenceName": "Assignment_04_Exercise_03_Meduim_Dest_DS",
-								"type": "DatasetReference"
-							},
-							"name": "sink2"
-						},
-						{
-							"dataset": {
-								"referenceName": "Assignment_04_Exercise_03_High_Dest_DS",
-								"type": "DatasetReference"
-							},
-							"name": "sink3"
-						}
-					],
-					"transformations": [
-						{
-							"name": "ConditionalSplit1"
-						},
-						{
-							"name": "Join2"
-						}
-					],
-					"script": "source(output(\n\t\tSalesOrderID as integer,\n\t\tRevisionNumber as integer,\n\t\tOrderDate as timestamp,\n\t\tDueDate as timestamp,\n\t\tShipDate as timestamp,\n\t\tStatus as integer,\n\t\tOnlineOrderFlag as boolean,\n\t\tSalesOrderNumber as string,\n\t\tPurchaseOrderNumber as string,\n\t\tAccountNumber as string,\n\t\tCustomerID as integer,\n\t\tShipToAddressID as integer,\n\t\tBillToAddressID as integer,\n\t\tShipMethod as string,\n\t\tCreditCardApprovalCode as string,\n\t\tSubTotal as decimal(19,4),\n\t\tTaxAmt as decimal(19,4),\n\t\tFreight as decimal(19,4),\n\t\tTotalDue as decimal(19,4),\n\t\tComment as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source1\nsource(output(\n\t\tCustomerID as integer,\n\t\tNameStyle as boolean,\n\t\tTitle as string,\n\t\tFirstName as string,\n\t\tMiddleName as string,\n\t\tLastName as string,\n\t\tSuffix as string,\n\t\tCompanyName as string,\n\t\tSalesPerson as string,\n\t\tEmailAddress as string,\n\t\tPhone as string,\n\t\tPasswordHash as string,\n\t\tPasswordSalt as string,\n\t\trowguid as string,\n\t\tModifiedDate as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table') ~> source2\nJoin2 split(TotalDue<2000,\n\tTotalDue>=2000 && TotalDue <5000,\n\tTotalDue>=5000,\n\tdisjoint: false) ~> ConditionalSplit1@(Low, Medium, High)\nsource1, source2 join(source1@CustomerID == source2@CustomerID,\n\tjoinType:'inner',\n\tbroadcast: 'auto')~> Join2\nConditionalSplit1@Low sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['Low'],\n\tmapColumn(\n\t\tSalesOrderID,\n\t\tAccountNumber,\n\t\tCustomerID = ConditionalSplit1@Low@CustomerID,\n\t\tTotalDue,\n\t\tTitle,\n\t\tFirstName,\n\t\tLastName,\n\t\tCompanyName\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink1\nConditionalSplit1@Medium sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['Mediul'],\n\tmapColumn(\n\t\tSalesOrderID,\n\t\tStatus,\n\t\tCustomerID = ConditionalSplit1@Medium@CustomerID,\n\t\tTotalDue,\n\t\tTitle,\n\t\tFirstName,\n\t\tLastName,\n\t\tCompanyName\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink2\nConditionalSplit1@High sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:['High'],\n\ttruncate: true,\n\tmapColumn(\n\t\tSalesOrderID,\n\t\tStatus,\n\t\tCustomerID = ConditionalSplit1@High@CustomerID,\n\t\tTotalDue,\n\t\tTitle,\n\t\tFirstName,\n\t\tLastName,\n\t\tCompanyName\n\t),\n\tpartitionBy('hash', 1),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> sink3"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Assignment_04_Exercise_03_DS')]",
-				"[concat(variables('factoryId'), '/datasets/Assignment_04_Exercise_03_Customer_sourcer_DS')]",
-				"[concat(variables('factoryId'), '/datasets/Assignment_04_Exercise_03_Low_Destination')]",
-				"[concat(variables('factoryId'), '/datasets/Assignment_04_Exercise_03_Meduim_Dest_DS')]",
-				"[concat(variables('factoryId'), '/datasets/Assignment_04_Exercise_03_High_Dest_DS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Exercise_06')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Copy data1",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "Select C.FirstName+' '+C.LastName+' brought '+P.Name+' from '+C.SalesPerson+' worth '+CONVERT(VARCHAR(12), P.ListPrice) \nfrom [SalesLT].[Customer] as C\nInner Join [SalesLT].[SalesOrderHeader] as S on C.CustomerID=S.CustomerID\nInner Join [SalesLT].[SalesOrderDetail] as D on S.SalesOrderID=D.SalesOrderID\nInner Join [SalesLT].[Product] as P on D.ProductID=P.ProductID",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"sink": {
-								"type": "JsonSink",
-								"storeSettings": {
-									"type": "AzureBlobStorageWriteSettings"
-								},
-								"formatSettings": {
-									"type": "JsonWriteSettings"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "Assignment_04_Exercise_06_AZSQL_Source_DS",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "Assignment_04_Exercise_06_Json_destination_DS",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"folder": {
-					"name": "Assignment_04"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/Assignment_04_Exercise_06_AZSQL_Source_DS')]",
-				"[concat(variables('factoryId'), '/datasets/Assignment_04_Exercise_06_Json_destination_DS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/Assignment_04_Exercise_04_Lookup_DS')]",
+			"name": "[concat(parameters('factoryName'), '/Exercise_05_Input_Copy_DS')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
 					"referenceName": "ON_Premise_SQL_LS",
-					"type": "LinkedServiceReference"
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"servername": "LAPTOP-EAKIJQ76\\BRANDON",
+						"username": "LAPTOP-EAKIJQ76\\brand",
+						"password": "shanu1311",
+						"databasename": "AdventureWorks2012"
+					}
 				},
 				"annotations": [],
 				"type": "SqlServerTable",
-				"schema": [],
-				"typeProperties": {}
+				"schema": [
+					{
+						"name": "SalesOrderID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "RevisionNumber",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "OrderDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "DueDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "ShipDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					},
+					{
+						"name": "Status",
+						"type": "tinyint",
+						"precision": 3
+					},
+					{
+						"name": "OnlineOrderFlag",
+						"type": "bit"
+					},
+					{
+						"name": "SalesOrderNumber",
+						"type": "nvarchar"
+					},
+					{
+						"name": "PurchaseOrderNumber",
+						"type": "nvarchar"
+					},
+					{
+						"name": "AccountNumber",
+						"type": "nvarchar"
+					},
+					{
+						"name": "CustomerID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SalesPersonID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "TerritoryID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BillToAddressID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ShipToAddressID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "ShipMethodID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CreditCardID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "CreditCardApprovalCode",
+						"type": "varchar"
+					},
+					{
+						"name": "CurrencyRateID",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "SubTotal",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "TaxAmt",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "Freight",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "TotalDue",
+						"type": "money",
+						"precision": 19,
+						"scale": 4
+					},
+					{
+						"name": "Comment",
+						"type": "nvarchar"
+					},
+					{
+						"name": "rowguid",
+						"type": "uniqueidentifier"
+					},
+					{
+						"name": "ModifiedDate",
+						"type": "datetime",
+						"precision": 23,
+						"scale": 3
+					}
+				],
+				"typeProperties": {
+					"schema": "Sales",
+					"table": "SalesOrderHeader"
+				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/ON_Premise_SQL_LS')]"
