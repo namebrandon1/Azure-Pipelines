@@ -72,9 +72,6 @@
 					"AzureBlobStorage_LS_connectionString": {
 						"value": "[parameters('AzureBlobStorage_LS_connectionString')]"
 					},
-					"ON_Premise_SQL_LS_connectionString": {
-						"value": "[parameters('ON_Premise_SQL_LS_connectionString')]"
-					},
 					"AzureDataLakeStoreGen1_LS_properties_typeProperties_dataLakeStoreUri": {
 						"value": "[parameters('AzureDataLakeStoreGen1_LS_properties_typeProperties_dataLakeStoreUri')]"
 					},
@@ -86,9 +83,6 @@
 					},
 					"AzureDataLakeStoreGen1_LS_properties_typeProperties_resourceGroupName": {
 						"value": "[parameters('AzureDataLakeStoreGen1_LS_properties_typeProperties_resourceGroupName')]"
-					},
-					"ON_Premise_SQL_LS_properties_typeProperties_userName": {
-						"value": "[parameters('ON_Premise_SQL_LS_properties_typeProperties_userName')]"
 					}
 				}
 			},
@@ -107,6 +101,12 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"ON_Premise_SQL_LS_connectionString": {
+						"value": "[parameters('ON_Premise_SQL_LS_connectionString')]"
+					},
+					"ON_Premise_SQL_LS_properties_typeProperties_userName": {
+						"value": "[parameters('ON_Premise_SQL_LS_properties_typeProperties_userName')]"
 					}
 				}
 			},
