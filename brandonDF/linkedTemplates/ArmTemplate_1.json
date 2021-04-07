@@ -203,7 +203,7 @@
 							"source": {
 								"type": "AzureSqlSource",
 								"sqlReaderQuery": {
-									"value": "select * from [SalesLT].[SalesOrderDetail]\nwhere LastModifytime > '@{activity('Lookup1').output.firstRow.WatermarkValue}' \nand LastModifytime <= '@{activity('Lookup2').output.firstRow.NewWatermarkvalue}'",
+									"value": "select * from [SalesLT].[SalesOrderDetail]\nwhere ModifiedDate > '@{activity('Lookup1').output.firstRow.WatermarkValue}' \nand \tModifiedDate <= '@{activity('Lookup2').output.firstRow.NewWatermarkvalue}'  ",
 									"type": "Expression"
 								},
 								"queryTimeout": "02:00:00",
