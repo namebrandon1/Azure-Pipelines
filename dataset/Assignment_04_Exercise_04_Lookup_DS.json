@@ -1,0 +1,12 @@
+{
+	"name": "Assignment_04_Exercise_04_Lookup_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "ON_Premise_SQL_LS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	}
+}
