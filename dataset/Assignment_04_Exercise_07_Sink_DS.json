@@ -1,0 +1,32 @@
+{
+	"name": "Assignment_04_Exercise_07_Sink_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage_LS",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"name": {
+				"type": "string",
+				"defaultValue": "@{activity('Lookup2').output.firstRow.NewWatermarkvalue"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "\nconcat('SalesOrderDetail',@dataset().name,'.txt')",
+					"type": "Expression"
+				},
+				"container": "salesdatacontainer"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

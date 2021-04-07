@@ -1,0 +1,27 @@
+{
+	"name": "Assignment_04_Exercise_07_Lookup_Watermarktable_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AZURE_SQL_LS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "TableName",
+				"type": "varchar"
+			},
+			{
+				"name": "WatermarkValue",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "watermarktable"
+		}
+	}
+}
