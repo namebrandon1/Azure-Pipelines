@@ -242,7 +242,7 @@
 								"referenceName": "Assignment_04_Exercise_07_Sink_DS",
 								"type": "DatasetReference",
 								"parameters": {
-									"name": "@{activity('Lookup2').output.firstRow.NewWatermarkvalue"
+									"name": "@{activity('Lookup2').output.firstRow.NewWatermarkvalue.value"
 								}
 							}
 						]
