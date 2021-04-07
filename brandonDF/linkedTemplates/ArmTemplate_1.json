@@ -269,16 +269,16 @@
 						"typeProperties": {
 							"storedProcedureName": "[[dbo].[usp_write_watermark]",
 							"storedProcedureParameters": {
-								"LastModifiedtime": {
+								"ModifiedDate": {
 									"value": {
-										"value": "@{activity('Lookup1').output.firstRow.NewWatermarkvalue}",
+										"value": "@{activity('Lookup2').output.firstRow.NewWatermarkvalue}",
 										"type": "Expression"
 									},
 									"type": "DateTime"
 								},
 								"TableName": {
 									"value": {
-										"value": "@{activity('Lookup2').output.firstRow.TableName}",
+										"value": "@{activity('Lookup1').output.firstRow.TableName}",
 										"type": "Expression"
 									},
 									"type": "String"
