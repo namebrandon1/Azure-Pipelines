@@ -1,0 +1,12 @@
+{
+	"name": "Assignment_04_Exercise_06_AZSQL_Source_DS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AZURE_SQL_LS",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}

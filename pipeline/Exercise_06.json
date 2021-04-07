@@ -1,0 +1,54 @@
+{
+	"name": "Exercise_06",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "Select C.FirstName+' '+C.LastName+' brought '+P.Name+' from '+C.SalesPerson+' worth '+CONVERT(VARCHAR(12), P.ListPrice) \nfrom [SalesLT].[Customer] as C\nInner Join [SalesLT].[SalesOrderHeader] as S on C.CustomerID=S.CustomerID\nInner Join [SalesLT].[SalesOrderDetail] as D on S.SalesOrderID=D.SalesOrderID\nInner Join [SalesLT].[Product] as P on D.ProductID=P.ProductID",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"sink": {
+						"type": "JsonSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "JsonWriteSettings"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "Assignment_04_Exercise_06_AZSQL_Source_DS",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Assignment_04_Exercise_06_Json_destination_DS",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"folder": {
+			"name": "Assignment_04"
+		},
+		"annotations": []
+	}
+}
