@@ -1403,7 +1403,7 @@
 					"location": {
 						"type": "AzureBlobStorageLocation",
 						"fileName": {
-							"value": "\nconcat('SalesOrderDetail',@dataset().name,'.txt')",
+							"value": "\n@dataset().name",
 							"type": "Expression"
 						},
 						"container": "salesdatacontainer"
