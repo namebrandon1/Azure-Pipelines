@@ -17,7 +17,7 @@
 			"location": {
 				"type": "AzureBlobStorageLocation",
 				"fileName": {
-					"value": "\n@dataset().name",
+					"value": "@concat('SalesOrderDetails',dataset().name,'.txt')\n",
 					"type": "Expression"
 				},
 				"container": "salesdatacontainer"
