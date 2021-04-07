@@ -1,0 +1,98 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "brandonDF"
+		},
+		"AZURE_SQL_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AZURE_SQL_LS'"
+		},
+		"AzureBlobStorage_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage_LS'"
+		},
+		"ON_Premise_SQL_LS_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'ON_Premise_SQL_LS'"
+		},
+		"AzureDataLakeStoreGen1_LS_properties_typeProperties_dataLakeStoreUri": {
+			"type": "string",
+			"defaultValue": "https://brandondlsg2.azuredatalakestore.net/webhdfs/v1"
+		},
+		"AzureDataLakeStoreGen1_LS_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "850006e0-4366-4135-89ba-fc21ea643929"
+		},
+		"AzureDataLakeStoreGen1_LS_properties_typeProperties_subscriptionId": {
+			"type": "string",
+			"defaultValue": "e4fd34ef-338d-4380-ae92-d77715041b99"
+		},
+		"AzureDataLakeStoreGen1_LS_properties_typeProperties_resourceGroupName": {
+			"type": "string",
+			"defaultValue": "BrandonRG"
+		},
+		"ON_Premise_SQL_LS_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "@{linkedService().username}"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "brandonDF_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AZURE_SQL_LS_connectionString": {
+						"value": "[parameters('AZURE_SQL_LS_connectionString')]"
+					},
+					"AzureBlobStorage_LS_connectionString": {
+						"value": "[parameters('AzureBlobStorage_LS_connectionString')]"
+					},
+					"ON_Premise_SQL_LS_connectionString": {
+						"value": "[parameters('ON_Premise_SQL_LS_connectionString')]"
+					},
+					"AzureDataLakeStoreGen1_LS_properties_typeProperties_dataLakeStoreUri": {
+						"value": "[parameters('AzureDataLakeStoreGen1_LS_properties_typeProperties_dataLakeStoreUri')]"
+					},
+					"AzureDataLakeStoreGen1_LS_properties_typeProperties_tenant": {
+						"value": "[parameters('AzureDataLakeStoreGen1_LS_properties_typeProperties_tenant')]"
+					},
+					"AzureDataLakeStoreGen1_LS_properties_typeProperties_subscriptionId": {
+						"value": "[parameters('AzureDataLakeStoreGen1_LS_properties_typeProperties_subscriptionId')]"
+					},
+					"AzureDataLakeStoreGen1_LS_properties_typeProperties_resourceGroupName": {
+						"value": "[parameters('AzureDataLakeStoreGen1_LS_properties_typeProperties_resourceGroupName')]"
+					},
+					"ON_Premise_SQL_LS_properties_typeProperties_userName": {
+						"value": "[parameters('ON_Premise_SQL_LS_properties_typeProperties_userName')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
